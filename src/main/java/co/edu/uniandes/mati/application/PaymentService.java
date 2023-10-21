@@ -39,7 +39,7 @@ public class PaymentService {
 	}
 
 
-	public void createPayment(GeneratePayment getPayment) {
+	public Payment createPayment(GeneratePayment getPayment) {
 		Payment payment = new Payment();
 		payment.setIdTest(getPayment.getIdTest());
 		payment.setAmount(new BigDecimal("125.000"));
@@ -51,7 +51,6 @@ public class PaymentService {
 		payment.setPaymentDate(new Date());
 
 		Optional<User> user = userRepository.findByEmail(getPayment.getEmail());
-		System.out.println(user.toString());
         User newUser;
         if (user.isPresent()) {
             newUser = user.get();
@@ -60,7 +59,8 @@ public class PaymentService {
 			newUser.setEmail(getPayment.getEmail());
         }
         payment.setUser(newUser);
-        paymentRepository.save(payment);
+        return paymentRepository.save(payment);
+
     }
 
 }
