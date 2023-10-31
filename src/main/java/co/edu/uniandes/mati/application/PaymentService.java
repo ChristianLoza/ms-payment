@@ -45,7 +45,7 @@ public class PaymentService {
 	List<Payment> listPostPayment = new ArrayList<>();
 
 	public Uni<List<Payment>> getAllPayments() {
-		return Uni.createFrom().item(paymentRepository.findAll(Sort.by(Sort.Direction.DESC)));
+		return Uni.createFrom().item(paymentRepository.findAll());
 	}
 
 	public Uni<Payment> createPayment(Payment payment) {
