@@ -34,5 +34,6 @@ public class Payment{
     private User user;
     @Embedded
     private PaymentOption paymentOption;
+    private String typePayment;
     private Date paymentDate;
 }
