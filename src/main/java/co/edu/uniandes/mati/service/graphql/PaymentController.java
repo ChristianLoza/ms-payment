@@ -56,6 +56,7 @@ public class PaymentController {
 	ClientPayUService clientPayUService;
 
 	Payment paymentGenerate;
+	PaymentCheck paymentCheck;
 
 	@Query
 	@Description("List data")
@@ -73,14 +74,13 @@ public class PaymentController {
 
 		paymentGenerate = paymentService.createPayment(getPayment);
 		log.info("###  paymentGenerate:: " + paymentGenerate);
-		PaymentCheck paymentCheck = new PaymentCheck();
+		paymentCheck = new PaymentCheck();
 		paymentCheck.setIdTest(paymentGenerate.getIdTest());
 		paymentCheck.setEmail(paymentGenerate.getUser().getEmail());
 		paymentCheck.setStatus(paymentGenerate.getStatus());
 		paymentCheck.setPaymentDate(paymentGenerate.getPaymentDate());
 
-		emitter.send(mapper.writeValueAsString(paymentCheck));
-		log.info("### Send kafka Message" + paymentCheck);
+
 
 		return Uni.createFrom().voidItem();
 	}
@@ -88,6 +88,7 @@ public class PaymentController {
 	@Mutation
 	@CircuitBreaker(failureRatio = 0.1, delay = 5000L)
 	@Fallback(fallbackMethod = "fallbackGeneratePayment")
+	@SneakyThrows
 	public Payment generatePayment(Long idPayment) {
 		Payment getPayment = paymentService.updatePayment(idPayment);
 		log.info("### Payment Service" + getPayment);
@@ -103,6 +104,8 @@ public class PaymentController {
 			getPayment.setTypePayment("PRE-PAGO");
 			paymentRepository.save(getPayment);
 		}
+		emitter.send(mapper.writeValueAsString(paymentCheck));
+		log.info("### Send kafka Message" + paymentCheck);
 		return getPayment;
 	}
 
